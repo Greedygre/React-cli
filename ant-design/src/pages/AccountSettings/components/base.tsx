@@ -18,7 +18,7 @@ const AvatarView = ({ avatar }: { avatar: string }) => (
     <Upload showUploadList={false}>
       <div className={styles.button_view}>
         <Button>
-          <UploadOutlined />
+          {/*<UploadOutlined />*/}
           修改头像
         </Button>
       </div>

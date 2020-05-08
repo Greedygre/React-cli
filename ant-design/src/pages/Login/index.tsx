@@ -13,8 +13,7 @@ const NormalLoginForm = (props) => {
       type: 'myLogin/fetchLoginUser',
       payload: { ...values },
     });
-    //从model取数据
-    console.log(userLogin.data);
+
   };
   return (
     <Form
