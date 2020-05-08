@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Link, connect } from 'umi';
 import LoginFrom from './components/Login';
 import styles from './style.less';
-
+import FormNormalLogin from './FormNormalLogin';
 const { Tab, UserName, Password, Mobile, Captcha, Submit } = LoginFrom;
 
 const LoginMessage = ({ content }) => (
@@ -18,13 +18,13 @@ const LoginMessage = ({ content }) => (
   />
 );
 
-const Login = props => {
+const Login = (props) => {
   const { userLogin = {}, submitting } = props;
   const { status, type: loginType } = userLogin;
   const [autoLogin, setAutoLogin] = useState(true);
   const [type, setType] = useState('account');
 
-  const handleSubmit = values => {
+  const handleSubmit = (values) => {
     const { dispatch } = props;
     dispatch({
       type: 'login/login',
@@ -34,6 +34,7 @@ const Login = props => {
 
   return (
     <div className={styles.main}>
+      <FormNormalLogin />
       <LoginFrom activeKey={type} onTabChange={setType} onSubmit={handleSubmit}>
         <Tab key="account" tab="账户密码登录">
           {status === 'error' && loginType === 'account' && !submitting && (
@@ -94,7 +95,7 @@ const Login = props => {
           />
         </Tab>
         <div>
-          <Checkbox checked={autoLogin} onChange={e => setAutoLogin(e.target.checked)}>
+          <Checkbox checked={autoLogin} onChange={(e) => setAutoLogin(e.target.checked)}>
             自动登录
           </Checkbox>
           <a

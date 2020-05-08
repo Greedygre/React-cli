@@ -2,7 +2,6 @@
 import { defineConfig } from 'umi';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
-
 const { REACT_APP_ENV } = process.env;
 export default defineConfig({
   hash: true,
@@ -56,6 +55,12 @@ export default defineConfig({
               component: './Welcome',
             },
             {
+              path: '/register',
+              name: 'register',
+              icon: 'smile',
+              component: './Register',
+            },
+            {
               path: '/admin',
               name: 'admin',
               icon: 'crown',
@@ -78,6 +83,12 @@ export default defineConfig({
               component: './ListTableList',
             },
             {
+              name: '个人设置',
+              icon: 'smile',
+              path: '/accountsettings',
+              component: './AccountSettings',
+            },
+            {
               component: './404',
             },
           ],
@@ -97,7 +108,15 @@ export default defineConfig({
     'primary-color': defaultSettings.primaryColor,
   },
   ignoreMomentLocale: true,
-  proxy: proxy[REACT_APP_ENV || 'dev'],
+  proxy: {
+    '/server/api': {
+      target: 'http://localhost:8080/',
+      changeOrigin: true,
+      pathRewrite: {
+        '^/server': '',
+      },
+    },
+  },
   manifest: {
     basePath: '/',
   },

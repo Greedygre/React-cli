@@ -3,7 +3,7 @@ export default {
   'app.settings.menuMap.security': 'Configurações de Segurança',
   'app.settings.menuMap.binding': 'Vinculação de Conta',
   'app.settings.menuMap.notification': 'Mensagens de Notificação',
-  'app.settings.basic.avatar': 'Avatar',
+  'app.settings.basic.avatar': '头像',
   'app.settings.basic.change-avatar': 'Alterar avatar',
   'app.settings.basic.email': 'Email',
   'app.settings.basic.email-message': 'Por favor insira seu email!',
