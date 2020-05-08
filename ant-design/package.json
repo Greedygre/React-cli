@@ -54,6 +54,7 @@
     "@ant-design/pro-layout": "^5.0.8",
     "@ant-design/pro-table": "2.2.1",
     "antd": "^4.0.0",
+    "babel": "^6.23.0",
     "classnames": "^2.2.6",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
@@ -63,6 +64,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-helmet-async": "^1.0.4",
+    "react-router": "^5.1.2",
     "umi": "3.1.1",
     "umi-request": "^1.0.8",
     "use-merge-value": "^1.0.1"

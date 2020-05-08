@@ -2,6 +2,8 @@ import {
   userlogin
 } from "@/services/myLogin";
 import {message} from 'antd';
+import {HashRouter as Router, Link, Redirect, Route} from 'react-router-dom';
+import {history} from "umi";
 
 export default {
   namespace: 'myLogin',
@@ -15,7 +17,7 @@ export default {
   effects: {
     * fetchLoginUser(payload, {call, put}) {
       console.log(payload);
-      //异步拉取省份数据
+      //拉取登录信息数据
       const res = yield call(userlogin, payload);
       console.log(res);
       if (res.success) {
@@ -37,10 +39,10 @@ export default {
             message:res.message
           }
         });
+       history.replace("/accountsettings");
       } else {
         message.warning(res.message);
       }
-
     },
 
 

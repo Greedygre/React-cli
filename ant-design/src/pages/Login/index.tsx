@@ -13,7 +13,6 @@ const NormalLoginForm = (props) => {
       type: 'myLogin/fetchLoginUser',
       payload: { ...values },
     });
-
   };
   return (
     <Form

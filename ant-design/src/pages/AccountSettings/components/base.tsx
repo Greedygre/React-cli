@@ -99,7 +99,7 @@ class BaseView extends Component<BaseViewProps> {
   };
 
   render() {
-    const { currentUser, userLogin } = this.props;
+    const {  userLogin } = this.props;
     console.log(userLogin.data);
     return (
       <div className={styles.baseView} ref={this.getViewDom}>
