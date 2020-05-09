@@ -4,11 +4,14 @@ import { Form, Input, Button, Checkbox } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { submitLoginData } from '@/services/myLogin';
 import { connect, Link } from 'umi';
+import md5 from "md5";
 
 const NormalLoginForm = (props) => {
   const onFinish = (values) => {
     const { dispatch, userLogin } = props;
     console.log('22Received values : ', values.username, values.password);
+    const pw = md5(values.password);
+    values.password=pw;
     dispatch({
       type: 'myLogin/fetchLoginUser',
       payload: { ...values },
