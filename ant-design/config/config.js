@@ -89,6 +89,12 @@ export default defineConfig({
               component: './AccountSettings',
             },
             {
+              name: '个人',
+              icon: 'smile',
+              path: '/webSocket',
+              component: './WebSocket',
+            },
+            {
               component: './404',
             },
           ],
