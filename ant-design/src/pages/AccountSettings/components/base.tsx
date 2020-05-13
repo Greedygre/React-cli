@@ -10,10 +10,13 @@ import styles from './BaseView.less';
 const { Option } = Select; // 头像组件 方便以后独立，增加裁剪之类的功能
 
 const AvatarView = ({ avatar }: { avatar: string }) => (
-  <>
+<>
     <div className={styles.avatar_title}>头像</div>
     <div className={styles.avatar}>
-      <img src={avatar} alt="avatar" />
+      {/*<img src={require(`${avatar}`)}  alt="avatar" />*/}
+      {/**/}
+      <img src={require(`../../img/${avatar}`)}  alt="avatar" />
+
     </div>
     <Upload showUploadList={false}>
       <div className={styles.button_view}>
@@ -79,11 +82,10 @@ class BaseView extends Component<BaseViewProps> {
     if (userLogin) {
       if (userLogin.data.pictureAddress) {
         console.log(userLogin.data.pictureAddress);
-        return userLogin.data.pictureAddress;
+        return `${userLogin.data.pictureAddress}`;
       }
-      //const url ='http://img.52z.com/upload/news/image/20200421/20200421121630_33367.jpg';
       const url =
-        'http://5b0988e595225.cdn.sohucs.com/images/20180114/62f24a8af50d4f329644275e0efbfbff.jpeg';
+        '62f24a8af50d4f329644275e0efbfbff.jpeg';
       return url;
     }
 

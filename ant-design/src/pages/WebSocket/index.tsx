@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import Chat from 'chat-react';
-import {Form, Input, Button, Checkbox} from 'antd';
+import {ReactDOM} from 'react';
 import {UserOutlined, LockOutlined} from '@ant-design/icons';
 import {history} from "umi";
 import {connect} from 'dva'
@@ -10,7 +10,10 @@ import {stringify} from "qs";
 import GoEasy from 'goeasy';
 import g from '../global.js'
 import {List, InputItem, NavBar, Icon, Grid} from 'antd-mobile'
+
 var that = null;
+var userName = null;
+var chatRoomChannel = 'default';
 g.goEasy = new GoEasy({
   host: 'hangzhou.goeasy.io',//应用所在的区域地址，杭州：hangzhou.goeasy.io，新加坡：singapore.goeasy.io
   appkey: "BC-6ffc39fa9de840079599baf44bfe1c50",//替换为您的应用appkey
@@ -25,22 +28,18 @@ g.goEasy = new GoEasy({
   }
 });
 g.goEasy.subscribe({
-  channel: "chatRoom",// 聊天室的channel为对战玩家的昵称
+  channel: chatRoomChannel,// 聊天室的channel为对战玩家的昵称
   onMessage: function (msg) {
-    //msg格式
-    //{time: 1589305201310, channel: "chatRoom", content: "{"value":"🙉","timestamp":1589305201774,"name":"lu…ad/news/image/20200421/20200421121630_33367.jpg"}"}
-    // channel: "chatRoom"
-    // content: "{"value":"🙉","timestamp":1589305201774,"name":"lulala","avatar":"http://img.52z.com/upload/news/image/20200421/20200421121630_33367.jpg"}"
-    // time: 1589305201310
     console.log(msg);
     //订阅聊天室管道并更新聊天列表
     revMessage(msg);
   }
 });
 
-@connect(({myLogin, myMessage,loading}) => ({
+@connect(({myLogin, myMessage,myChannel, loading}) => ({
   myLogin,
   myMessage,
+  myChannel,
 }))
 export default class MyChat extends Component {
   state = {
@@ -54,25 +53,35 @@ export default class MyChat extends Component {
   setScrollTop = () => {
     this.chat.refs.message.setScrollTop(1200);  //set scrollTop position
   }
-  sendMessage = (v) =>{
+  sendMessage = (v) => {
+    g.goEasy.subscribe({
+      channel: chatRoomChannel,// 聊天室的channel为对战玩家的昵称
+      onMessage: function (msg) {
+        console.log(msg);
+        //订阅聊天室管道并更新聊天列表
+        revMessage(msg);
+      }
+    });
     //v的内容包含value，时间戳，用户信息
     //value: "😏", timestamp: 1589297437337, userInfo: avatar: "http://img.binlive.cn/6.png"
     // name: "ricky"
     // userId: "a59e454ea53107d66ceb0a59
-
     g.goEasy.publish({
-      channel: "chatRoom", //替换为您自己的channel
+      channel: chatRoomChannel, //替换为您自己的channel
       message: JSON.stringify({
         value: v.value,
         timestamp: v.timestamp,
         name: v.userInfo.name,
         avatar: v.userInfo.avatar
-      } )//替换为您想要发送的消息内容
+      })//替换为您想要发送的消息内容
     });
+
   }
 
+
   render() {
-    that=this;
+    that = this;
+     getChatRoom(userName)
     const {myLogin, myMessage} = this.props;
     const {inputValue, messages, timestamp} = this.state;
     const userInfo = {
@@ -80,11 +89,14 @@ export default class MyChat extends Component {
       name: myLogin.data.name,
       signature: myLogin.data.signature,
     };
+    userName = userInfo.name;
     const Item = List.Item
     //聊天消息
     const chatmsgs = myMessage.messages;
+
     console.log("chatmsgs");
     console.log(chatmsgs);
+
     return (
       <div>
         <div>
@@ -102,32 +114,49 @@ export default class MyChat extends Component {
           >
             {/* 对方的id */}
             {/*{users[userid].name}*/}
-            {'皮卡丘'}
+            {'聊天室'}
           </NavBar>
           <div className='chat-content'>
             {chatmsgs.map(v => {
               //用户头像
               //const avatar = require(userInfo.avatar)
-              const avatar = require(`../img/bear.png`)
-              console.log("chat-->msg",v);
-              return v.from === "userid" ? (
+              var a_str = null;
+              if (v.avatar) {
+                a_str = v.avatar;
+              } else {
+                a_str = '62f24a8af50d4f329644275e0efbfbff.jpeg';
+              }
+              const avatar = require('../img/' + a_str)
+              console.log("chat-->msg", v);
+              return (
                 <List key={v.userNick}>
                   <Item
                     thumb={avatar}
-                  >{v.msg}</Item>
-                </List>
-              ) : (
-
-                <List key={v.userNick}>
-                  <Item
-                    extra={<img alt='头像' src={avatar}/>}
-                    className='chat-me'>{v.msg}</Item>
+                  >{v.userNick}说：{v.msg}</Item>
                 </List>
               )
+              // return v.userNick === userInfo.name ? (
+              //   <List key={v.userNick}>
+              //     <Item
+              //       thumb={avatar}
+              //     >{v.userNick}说：{v.msg}</Item>
+              //   </List>
+              // ) : (
+              //   <List key={v.userNick}>
+              //     <Item
+              //       thumb={avatar}
+              //     >{v.userNick}说：{v.msg}</Item>
+              //   </List>
+              // )
 
             })}
           </div>
         </div>
+{/*游戏界面*/}
+        <div>
+          <Game />
+        </div>
+
         {/*脚部输入框*/}
         <div>
           <Chat
@@ -147,19 +176,95 @@ export default class MyChat extends Component {
     );
   }
 }
-const revMessage =(message)=> {
+const revMessage = (message) => {
   console.log('========================')
   console.log(message)
   const c = JSON.parse(message.content);
   console.log(c.name)
-    const {dispatch} = that.props;
-    dispatch({
-      type: 'myMessage/updateMessage',
-      payload: {
-        msg:c.value,
-        userNick:c.name,
-        avatar: c.avatar,
-        timestamp: message.time,
-      }
-    });
+  const {dispatch} = that.props;
+  dispatch({
+    type: 'myMessage/updateMessage',
+    payload: {
+      msg: c.value,
+      userNick: c.name,
+      avatar: c.avatar,
+      timestamp: message.time,
+    }
+  });
 }
+const getChatRoom = (userName) => {
+  console.log('============getChatRoom============' + userName)
+  const req = '/server/api/game/getChatRoomChannel?userName='+userName;
+  fetch(req).then(response=>{
+    return response.json()
+    }).then((respone)=>{
+    console.log(respone) //请求到的数据
+    chatRoomChannel=respone.data;
+    console.log('----'+chatRoomChannel) //请求到的数据
+
+  })
+
+  console.log(chatRoomChannel) //请求到的数据
+
+}
+
+class Square extends React.Component {
+  render() {
+    return (
+      <button className="square">
+        {/* TODO */}
+      </button>
+    );
+  }
+}
+
+class Board extends React.Component {
+  renderSquare(i) {
+    return <Square />;
+  }
+
+  render() {
+    const status = 'Next player: X';
+
+    return (
+      <div>
+        <div className="status">{status}</div>
+        <div className="board-row">
+          {this.renderSquare(0)}
+          {this.renderSquare(1)}
+          {this.renderSquare(2)}
+        </div>
+        <div className="board-row">
+          {this.renderSquare(3)}
+          {this.renderSquare(4)}
+          {this.renderSquare(5)}
+        </div>
+        <div className="board-row">
+          {this.renderSquare(6)}
+          {this.renderSquare(7)}
+          {this.renderSquare(8)}
+        </div>
+      </div>
+    );
+  }
+}
+
+class Game extends React.Component {
+  render() {
+    return (
+      <div className="game">
+        <div className="game-board">
+          <Board />
+        </div>
+        <div className="game-info">
+          <div>{/* status */}</div>
+          <ol>{/* TODO */}</ol>
+        </div>
+      </div>
+    );
+  }
+}
+
+// ========================================
+
+
