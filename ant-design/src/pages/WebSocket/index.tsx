@@ -21,6 +21,7 @@ g.goEasy = new GoEasy({
     console.log('连接成功！')
   },
   onDisconnected: function () {
+    //连接断开时调用后端方法
     console.log('连接断开！')
   },
   onConnectFailed: function (error) {
@@ -200,14 +201,20 @@ const getChatRoom = (userName) => {
     }).then((respone)=>{
     console.log(respone) //请求到的数据
     chatRoomChannel=respone.data;
+  })
+}
+const userLeaveGame = (userName) => {
+  console.log('============userLeaveGame============' + userName)
+  const req = '/server/api/game/userLeaveGame?userName='+userName;
+  fetch(req).then(response=>{
+    return response.json()
+  }).then((respone)=>{
+    console.log(respone) //请求到的数据
+    chatRoomChannel=respone.data;
     console.log('----'+chatRoomChannel) //请求到的数据
 
   })
-
-  console.log(chatRoomChannel) //请求到的数据
-
 }
-
 class Square extends React.Component {
   render() {
     return (
