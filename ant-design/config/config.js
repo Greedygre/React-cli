@@ -89,10 +89,16 @@ export default defineConfig({
               component: './AccountSettings',
             },
             {
-              name: '个人',
+              name: '游戏主页',
               icon: 'smile',
               path: '/webSocket',
               component: './WebSocket',
+            },
+            {
+              name: '井字棋模块',
+              icon: 'smile',
+              path: '/Game',
+              component: './Game',
             },
             {
               component: './404',

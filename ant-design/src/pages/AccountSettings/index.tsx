@@ -30,7 +30,6 @@ class AccountSettings extends Component<AccountSettingsProps, AccountSettingsSta
     super(props);
     const menuMap = {
       base: '基本设置',
-      security: '安全设置',
       binding: '账号绑定',
       notification: '新消息',
     };

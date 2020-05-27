@@ -4,13 +4,14 @@ import {ReactDOM} from 'react';
 import {UserOutlined, LockOutlined} from '@ant-design/icons';
 import {history} from "umi";
 import {connect} from 'dva'
-import {json} from "express";
-import {stringify} from "qs";
 // 在index.js文件里，引入global.js，并初始化一个全局GoEasy对象
 import GoEasy from 'goeasy';
 import g from '../global.js'
+import Game from '../Game'
 import {List, InputItem, NavBar, Icon, Grid} from 'antd-mobile'
-
+import {GridContent} from "@ant-design/pro-layout";
+import {Menu} from "antd";
+import styles from '../AccountSettings/style.less';
 var that = null;
 var userName = null;
 var chatRoomChannel = 'default';
@@ -100,63 +101,64 @@ export default class MyChat extends Component {
 
     return (
       <div>
-        <div>
-          <p>聊天室</p>
-        </div>
-        {/*聊天内容展示部分*/}
-        <div id='chat-page'>
-          <NavBar
-            mode='dark'
-            className='chat-top-bar'
-            icon={<Icon type="left"/>}
-            onLeftClick={() => {
-              this.props.history.goBack()
+        <GridContent>
+          <div
+            className={styles.main}
+            ref={(ref) => {
+              if (ref) {
+                this.main = ref;
+              }
             }}
           >
-            {/* 对方的id */}
-            {/*{users[userid].name}*/}
-            {'聊天室'}
-          </NavBar>
-          <div className='chat-content'>
-            {chatmsgs.map(v => {
-              //用户头像
-              //const avatar = require(userInfo.avatar)
-              var a_str = null;
-              if (v.avatar) {
-                a_str = v.avatar;
-              } else {
-                a_str = '62f24a8af50d4f329644275e0efbfbff.jpeg';
-              }
-              const avatar = require('../img/' + a_str)
-              console.log("chat-->msg", v);
-              return (
-                <List key={v.userNick}>
-                  <Item
-                    thumb={avatar}
-                  >{v.userNick}说：{v.msg}</Item>
-                </List>
-              )
-              // return v.userNick === userInfo.name ? (
-              //   <List key={v.userNick}>
-              //     <Item
-              //       thumb={avatar}
-              //     >{v.userNick}说：{v.msg}</Item>
-              //   </List>
-              // ) : (
-              //   <List key={v.userNick}>
-              //     <Item
-              //       thumb={avatar}
-              //     >{v.userNick}说：{v.msg}</Item>
-              //   </List>
-              // )
+            <div className={styles.leftMenu}>
+              {/*聊天内容展示部分*/}
+              <div id='chat-page'>
+                <NavBar
+                  mode='dark'
+                  className='chat-top-bar'
+                  icon={<Icon type="left"/>}
+                  onLeftClick={() => {
+                    this.props.history.goBack()
+                  }}
+                >
+                  {/* 对方的id */}
+                  {/*{users[userid].name}*/}
+                  {'聊天室'}
+                </NavBar>
+                <div className='chat-content'>
+                  {chatmsgs.map(v => {
+                    //用户头像
+                    //const avatar = require(userInfo.avatar)
+                    var a_str = null;
+                    if (v.avatar) {
+                      a_str = v.avatar;
+                    } else {
+                      a_str = '62f24a8af50d4f329644275e0efbfbff.jpeg';
+                    }
+                    const avatar = require('../img/' + a_str)
+                    console.log("chat-->msg", v);
+                    return (
+                      <List key={v.userNick}>
+                        <Item
+                          thumb={avatar}
+                        >{v.userNick}说：{v.msg}</Item>
+                      </List>
+                    )
 
-            })}
+                  })}
+                </div>
+              </div>
+            </div>
+            <div className={styles.right}>
+              {/*游戏界面*/}
+              <div>
+                <Game />
+              </div>
+            </div>
           </div>
-        </div>
-{/*游戏界面*/}
-        <div>
-          <Game />
-        </div>
+        </GridContent>
+
+
 
         {/*脚部输入框*/}
         <div>
@@ -215,62 +217,8 @@ const userLeaveGame = (userName) => {
 
   })
 }
-class Square extends React.Component {
-  render() {
-    return (
-      <button className="square">
-        {/* TODO */}
-      </button>
-    );
-  }
-}
 
-class Board extends React.Component {
-  renderSquare(i) {
-    return <Square />;
-  }
 
-  render() {
-    const status = 'Next player: X';
-
-    return (
-      <div>
-        <div className="status">{status}</div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    );
-  }
-}
-
-class Game extends React.Component {
-  render() {
-    return (
-      <div className="game">
-        <div className="game-board">
-          <Board />
-        </div>
-        <div className="game-info">
-          <div>{/* status */}</div>
-          <ol>{/* TODO */}</ol>
-        </div>
-      </div>
-    );
-  }
-}
 
 // ========================================
 

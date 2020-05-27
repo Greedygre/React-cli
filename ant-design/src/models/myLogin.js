@@ -18,12 +18,9 @@ export default {
     * fetchLoginUser(payload, {call, put}) {
       console.log(payload);
       //拉取登录信息数据
-      // const pw = md5(payload.password);
-      // payload.password=pw;
       const res = yield call(userlogin, payload);
       console.log(res);
       if (res.success) {
-        console.log("成功");
         yield put({
           type: 'show',
           payload:{
