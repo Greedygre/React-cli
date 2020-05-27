@@ -6,7 +6,11 @@ import {message} from "antd";
 
 const dd = (props) => {
   return (
-    <Game/>
+    <div>
+      <Game/>
+
+    </div>
+
   )
 }
 
@@ -27,6 +31,39 @@ class Board extends React.Component {
       <Square
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
+      />
+    );
+  }
+
+  render() {
+    return (
+      <div >
+
+        <div className={styles.boardRow} >
+          {this.renderSquare(0)}
+          {this.renderSquare(1)}
+          {this.renderSquare(2)}
+        </div>
+        <div className={styles.boardRow}>
+
+          {this.renderSquare(3)}
+          {this.renderSquare(4)}
+          {this.renderSquare(5)}
+        </div>
+        <div className={styles.boardRow}>
+          {this.renderSquare(6)}
+          {this.renderSquare(7)}
+          {this.renderSquare(8)}
+        </div>
+      </div>
+    );
+  }
+}
+class HBoard extends React.Component {
+  renderSquare(i) {
+    return (
+      <Square
+        value={this.props.squares[i]}
       />
     );
   }
@@ -55,9 +92,9 @@ class Board extends React.Component {
     );
   }
 }
-
 class Game extends React.Component {
   constructor(props) {
+    const {myLogin} = props;
     super(props);
     this.state = {
       history: [
@@ -66,7 +103,12 @@ class Game extends React.Component {
         }
       ],
       stepNumber: 0,
-      xIsNext: true
+      xIsNext: true,
+      watchHistory:[],
+      watchStepNumber: 0,
+      watchXIsNext: true,
+      historyDisplay:'none'
+      // user1:myLogin.data.name
     };
   }
 
@@ -91,14 +133,17 @@ class Game extends React.Component {
 
   jumpTo(step) {
     this.setState({
-      stepNumber: step,
-      xIsNext: (step % 2) === 0
+      watchStepNumber: step,
+      watchXIsNext: (step % 2) === 0,
+      historyDisplay:'block'
     });
+
   }
 
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
+    const watchHistory=history[this.state.watchStepNumber];
     const winner = calculateWinner(current.squares);
 
     const moves = history.map((step, move) => {
@@ -132,6 +177,11 @@ class Game extends React.Component {
         <div className={styles.gameInfo}>
           <div>{status}</div>
           <ol>{moves}</ol>
+        </div>
+        <div  style={{display: this.state.historyDisplay}}>
+          <HBoard
+            squares={watchHistory.squares}
+          />
         </div>
       </div>
     );
