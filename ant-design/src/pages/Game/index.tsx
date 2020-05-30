@@ -3,8 +3,43 @@ import {connect} from "umi";
 import styles from './index.less';
 import {GridContent, PageHeaderWrapper} from "@ant-design/pro-layout";
 import {message} from "antd";
+import {json} from "express";
+import g from '../global.js'
+import GoEasy from 'goeasy';
+var gameChannel = 'default';
+var that = null;
+var userName = 'default';
+var startGameOnlyOne = 0;
+g.goEasy = new GoEasy({
+  host: 'hangzhou.goeasy.io',//应用所在的区域地址，杭州：hangzhou.goeasy.io，新加坡：singapore.goeasy.io
+  appkey: "BC-6ffc39fa9de840079599baf44bfe1c50",//替换为您的应用appkey
+  onConnected: function () {
+    console.log('连接成功！')
+  },
+  onDisconnected: function () {
+    //连接断开时调用后端方法
+    console.log('连接断开！')
+  },
+  onConnectFailed: function (error) {
+    console.log('连接失败或错误！')
+  }
+});
 
-const dd = (props) => {
+const dd = props => {
+  const {userLogin} = props;
+  console.log(userLogin);
+  console.log('props');
+
+  console.log(props);
+
+  const req = '/server/api/game/getGameChannel?userName='+userLogin.data.name;
+  userName=userLogin.data.name;
+  fetch(req).then(response=>{
+    return response.json()
+  }).then((respone)=>{
+    console.log(respone) //请求到的数据
+    gameChannel=respone.data;
+  })
   return (
     <div>
       <Game/>
@@ -93,8 +128,9 @@ class HBoard extends React.Component {
   }
 }
 class Game extends React.Component {
+
   constructor(props) {
-    const {myLogin} = props;
+
     super(props);
     this.state = {
       history: [
@@ -108,10 +144,60 @@ class Game extends React.Component {
       watchStepNumber: 0,
       watchXIsNext: true,
       historyDisplay:'none'
-      // user1:myLogin.data.name
+      // user1:userLogin.data.name
     };
-  }
+    g.goEasy.subscribe({
+      channel: "lulala@@吨吨吨",// 对局的channel为对战玩家的昵称
+      onMessage: function (msg) {
+        console.log('revGameMessage');
+        console.log(msg);
+        //订阅棋盘管道并更新棋盘
+        revGameMessage(msg);
+      }
+    });
+    const revGameMessage = (message) => {
+      console.log('========================')
+      console.log(message)
+      const c = JSON.parse(message.content);
+      console.log(c)
+      this.updateHistory(c);
+    }
 
+  }
+  updateHistory(gameDO) {
+    console.log('updateHistory');
+    console.log(this.state);
+    const history = JSON.parse(gameDO.checkerBoard);
+    console.log(history);
+    console.log(history.history.length);
+    this.setState({
+      history:history.history,
+      stepNumber: history.history.length-1,
+      xIsNext: gameDO.gameTurn==='x'
+    });
+  }
+  //从数据库取出来返回的
+  updateHistory2(gameDO) {
+    console.log('updateHistory2');
+    console.log(this.state);
+    const gg=JSON.parse(gameDO);
+    console.log(gg);
+    const history = JSON.parse(gg.checkerBoard);
+    if (JSON.stringify(history.history)!==JSON.stringify(this.state.history)){
+      console.log(history);
+      console.log(history.length);
+      console.log(typeof gg.gameTurn);
+      console.log(typeof "x");
+      console.log(gg.gameTurn==="x");
+
+      this.setState({
+        history:history.history,
+        stepNumber: history.history.length-1,
+        xIsNext: gg.gameTurn==="x"
+      });
+    }
+
+  }
   handleClick(i) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
@@ -120,6 +206,28 @@ class Game extends React.Component {
       return;
     }
     squares[i] = this.state.xIsNext ? "X" : "O";
+    const {userLogin} = this.props;
+    console.log('history');
+    console.log(history);
+    const req = '/server/api/game/updateGame';
+    fetch(req, {
+      method: 'post',//改成post
+      mode: 'cors',//跨域
+      headers: {//请求头
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: 'userName='+userName+'&history='+JSON.stringify({
+        history: history.concat([
+          {
+            squares: squares
+          }
+        ])
+      })//向服务器发送的数据)
+    }).then(response=>{
+      return response.json()
+    }).then((respone)=>{
+      console.log(respone) //请求到的数据
+    })
     this.setState({
       history: history.concat([
         {
@@ -127,7 +235,6 @@ class Game extends React.Component {
         }
       ]),
       stepNumber: history.length,
-      xIsNext: !this.state.xIsNext
     });
   }
 
@@ -141,6 +248,18 @@ class Game extends React.Component {
   }
 
   render() {
+
+      const req = '/server/api/game/initGame?userName='+userName;
+      fetch(req).then(response=>{
+        return response.json()
+      }).then((respone)=>{
+        console.log(respone) //请求到的数据
+        this.updateHistory2(respone.data);
+      })
+
+
+    that = this;
+    console.log(this);
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const watchHistory=history[this.state.watchStepNumber];
@@ -215,3 +334,4 @@ export default connect(({myLogin, loading}) => ({
   userLogin: myLogin,
   submitting: loading.effects['myLogin/fetchLoginUser'],
 }))(dd);
+
