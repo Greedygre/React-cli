@@ -23,6 +23,7 @@ const NormalLoginForm = (props) => {
       className="login-form"
       initialValues={{ remember: true }}
       onFinish={onFinish}
+
     >
       <Form.Item name="username" rules={[{ required: true, message: '请输入用户名/邮箱/手机号!' }]}>
         <Input
@@ -52,7 +53,7 @@ const NormalLoginForm = (props) => {
           登录
         </Button>
         <p> </p>
-        <a href="/register">注册</a>
+        <a href="/register" style={{textAlign: 'center',justifyContent: 'center'}}>注册</a>
       </Form.Item>
     </Form>
   );

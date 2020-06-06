@@ -9,6 +9,7 @@ import GoEasy from 'goeasy';
 var gameChannel = 'default';
 var that = null;
 var userName = 'default';
+var userANick = 'default';
 var startGameOnlyOne = 0;
 g.goEasy = new GoEasy({
   host: 'hangzhou.goeasy.io',//应用所在的区域地址，杭州：hangzhou.goeasy.io，新加坡：singapore.goeasy.io
@@ -37,8 +38,12 @@ const dd = props => {
   fetch(req).then(response=>{
     return response.json()
   }).then((respone)=>{
-    console.log(respone) //请求到的数据
-    gameChannel=respone.data;
+    if (respone.success){
+      gameChannel=respone.data;
+    }else {
+      message.info(respone.message);
+    }
+
   })
   return (
     <div>
@@ -53,7 +58,7 @@ function Square(props) {
 
   return (
     // <button style={{background: '#fff', width: '100px', height: '100px', border: '1px solid #999',padding:'0',
-    //     //   marginLeft: '213',margin: '-1px'}} className="square" onClick={props.onClick}>
+    //       marginLeft: '213',margin: '-1px'}} className="square" onClick={props.onClick}>
     <button className={styles.square} onClick={props.onClick}>
       {props.value}
     </button>
@@ -182,6 +187,7 @@ class Game extends React.Component {
     console.log(this.state);
     const gg=JSON.parse(gameDO);
     console.log(gg);
+    userANick=gg.userANick;
     const history = JSON.parse(gg.checkerBoard);
     if (JSON.stringify(history.history)!==JSON.stringify(this.state.history)){
       console.log(history);
@@ -199,43 +205,48 @@ class Game extends React.Component {
 
   }
   handleClick(i) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
-    const squares = current.squares.slice();
-    if (calculateWinner(squares) || squares[i]) {
-      return;
-    }
-    squares[i] = this.state.xIsNext ? "X" : "O";
-    const {userLogin} = this.props;
-    console.log('history');
-    console.log(history);
-    const req = '/server/api/game/updateGame';
-    fetch(req, {
-      method: 'post',//改成post
-      mode: 'cors',//跨域
-      headers: {//请求头
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: 'userName='+userName+'&history='+JSON.stringify({
-        history: history.concat([
-          {
-            squares: squares
-          }
-        ])
-      })//向服务器发送的数据)
-    }).then(response=>{
-      return response.json()
-    }).then((respone)=>{
-      console.log(respone) //请求到的数据
-    })
-    this.setState({
-      history: history.concat([
-        {
-          squares: squares
+    if ((userName===userANick&&!this.state.xIsNext)||(userName!==userANick&&this.state.xIsNext)){
+        message.info("当前不是你的轮次");
+      }else {
+        const history = this.state.history.slice(0, this.state.stepNumber + 1);
+        const current = history[history.length - 1];
+        const squares = current.squares.slice();
+        if (calculateWinner(squares) || squares[i]) {
+          return;
         }
-      ]),
-      stepNumber: history.length,
-    });
+        squares[i] = this.state.xIsNext ? "X" : "O";
+        const {userLogin} = this.props;
+        console.log('history');
+        console.log(history);
+        const req = '/server/api/game/updateGame';
+        fetch(req, {
+          method: 'post',//改成post
+          mode: 'cors',//跨域
+          headers: {//请求头
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: 'userName='+userName+'&history='+JSON.stringify({
+            history: history.concat([
+              {
+                squares: squares
+              }
+            ])
+          })//向服务器发送的数据)
+        }).then(response=>{
+          return response.json()
+        }).then((respone)=>{
+          console.log(respone) //请求到的数据
+        })
+        this.setState({
+          history: history.concat([
+            {
+              squares: squares
+            }
+          ]),
+          stepNumber: history.length,
+        });
+      }
+
   }
 
   jumpTo(step) {
@@ -254,7 +265,9 @@ class Game extends React.Component {
         return response.json()
       }).then((respone)=>{
         console.log(respone) //请求到的数据
-        this.updateHistory2(respone.data);
+        if (respone.success){
+          this.updateHistory2(respone.data);
+        }
       })
 
 
@@ -278,10 +291,33 @@ class Game extends React.Component {
 
     let status;
     if (winner) {
+      let s = userANick===userName?"x":"o";
+      if (s===winner){
+        const req = '/server/api/game/settlementScore?userName='+userName+'&win=true';
+        fetch(req).then(response=>{
+          return response.json()
+        }).then((respone)=>{
+          if (respone.success){
+          }else {
+            message.info(respone.message);
+          }
+        })
+      }
       status = "获胜者为: " + winner;
       message.info(status);
-    } else {
+    } else if (this.state.stepNumber<9){
       status = "下一位落子: " + (this.state.xIsNext ? "X" : "O");
+    }else {
+      status = "平局" ;
+      const req = '/server/api/game/settlementScore?userName='+userName+'&win=false';
+      fetch(req).then(response=>{
+        return response.json()
+      }).then((respone)=>{
+        if (respone.success){
+        }else {
+          message.info(respone.message);
+        }
+      })
     }
 
     return (

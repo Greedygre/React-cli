@@ -10,7 +10,7 @@ import g from '../global.js'
 import Game from '../Game'
 import {List, InputItem, NavBar, Icon, Grid} from 'antd-mobile'
 import {GridContent} from "@ant-design/pro-layout";
-import {Menu} from "antd";
+import {message} from "antd";
 import styles from '../AccountSettings/style.less';
 var that = null;
 var userName = null;
@@ -87,7 +87,7 @@ export default class MyChat extends Component {
     const {myLogin, myMessage} = this.props;
     const {inputValue, messages, timestamp} = this.state;
     const userInfo = {
-      avatar: (typeof myLogin.data.pictureAddress != 'undefined') ? myLogin.data.pictureAddress : g.avatar,
+      avatar: (typeof myLogin.data.avatar != 'undefined') ? myLogin.data.avatar : g.avatar,
       name: myLogin.data.name,
       signature: myLogin.data.signature,
     };
@@ -201,8 +201,12 @@ const getChatRoom = (userName) => {
   fetch(req).then(response=>{
     return response.json()
     }).then((respone)=>{
-    console.log(respone) //请求到的数据
-    chatRoomChannel=respone.data;
+      if (respone.success){
+        chatRoomChannel=respone.data;
+      }else {
+        message.info(respone.message);
+      }
+
   })
 }
 const userLeaveGame = (userName) => {
@@ -211,9 +215,11 @@ const userLeaveGame = (userName) => {
   fetch(req).then(response=>{
     return response.json()
   }).then((respone)=>{
-    console.log(respone) //请求到的数据
-    chatRoomChannel=respone.data;
-    console.log('----'+chatRoomChannel) //请求到的数据
+    if (respone.success){
+      chatRoomChannel=respone.data;
+    }else {
+      message.info(respone.message);
+    }
 
   })
 }

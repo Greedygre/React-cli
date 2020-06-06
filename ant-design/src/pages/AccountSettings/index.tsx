@@ -31,7 +31,6 @@ class AccountSettings extends Component<AccountSettingsProps, AccountSettingsSta
     const menuMap = {
       base: '基本设置',
       binding: '账号绑定',
-      notification: '新消息',
     };
     this.state = {
       mode: 'inline',

@@ -80,9 +80,9 @@ class BaseView extends Component<BaseViewProps> {
     const { userLogin } = this.props;
 
     if (userLogin) {
-      if (userLogin.data.pictureAddress) {
-        console.log(userLogin.data.pictureAddress);
-        return `${userLogin.data.pictureAddress}`;
+      if (userLogin.data.avatar) {
+        console.log(userLogin.data.avatar);
+        return `${userLogin.data.avatar}`;
       }
       const url =
         '62f24a8af50d4f329644275e0efbfbff.jpeg';
@@ -124,6 +124,9 @@ class BaseView extends Component<BaseViewProps> {
 
             <Form.Item name="phone" label="手机号">
               <p>{userLogin.data.phoneNumber}</p>
+            </Form.Item>
+            <Form.Item name="phone" label="分数">
+              <p>{userLogin.data.score}</p>
             </Form.Item>
             <Form.Item>
               <Button htmlType="submit" type="primary">

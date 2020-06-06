@@ -77,15 +77,9 @@ export default defineConfig({
               ],
             },
             {
-              name: 'list.table-list',
-              icon: 'table',
-              path: '/list',
-              component: './ListTableList',
-            },
-            {
               name: '个人设置',
               icon: 'smile',
-              path: '/accountsettings',
+              path: '/account/settings',
               component: './AccountSettings',
             },
             {
