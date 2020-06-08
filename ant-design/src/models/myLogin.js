@@ -11,7 +11,7 @@ export default {
   namespace: 'myLogin',
   state: {
     data: {
-      name: [],
+      name: 'default',
       phoneNumber: [],
       email: [],
       sex: [],
@@ -47,6 +47,7 @@ export default {
             message:res.message
           }
         });
+        g.name=res.data.name;
        history.replace("/account/settings");
       } else {
         message.warning(res.message);

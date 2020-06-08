@@ -4,8 +4,11 @@ import React from 'react';
 import { history, connect } from 'umi';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
+import GoEasy from './goeasy';
+import g from '../../pages/global.js'
 
 class AvatarDropdown extends React.Component {
+
   onMenuClick = event => {
     const { key } = event;
 
@@ -32,6 +35,7 @@ class AvatarDropdown extends React.Component {
       },
       menu,
     } = this.props;
+    g.name=currentUser.name;
     const menuHeaderDropdown = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={this.onMenuClick}>
         {menu && (
@@ -53,15 +57,20 @@ class AvatarDropdown extends React.Component {
         </Menu.Item>
       </Menu>
     );
-    return currentUser && currentUser.name ? (
+    return (currentUser && currentUser.name ? (
+      <div>
       <HeaderDropdown overlay={menuHeaderDropdown}>
         <span className={`${styles.action} ${styles.account}`}>
           <Avatar size="small" className={styles.avatar} src={require(`../../pages/img/${currentUser.avatar}`)} alt="avatar" />
           <span className={styles.name}>{currentUser.name}</span>
         </span>
       </HeaderDropdown>
-    ) : (
-      <span className={`${styles.action} ${styles.account}`}>
+      <GoEasy />
+      </div>
+
+  ) : (
+    <div>
+       <span className={`${styles.action} ${styles.account}`}>
         <Spin
           size="small"
           style={{
@@ -70,7 +79,11 @@ class AvatarDropdown extends React.Component {
           }}
         />
       </span>
-    );
+      <GoEasy />
+    </div>
+    )
+
+    )
   }
 }
 

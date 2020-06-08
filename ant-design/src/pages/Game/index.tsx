@@ -152,7 +152,7 @@ class Game extends React.Component {
       // user1:userLogin.data.name
     };
     g.goEasy.subscribe({
-      channel: "lulala@@吨吨吨",// 对局的channel为对战玩家的昵称
+      channel: gameChannel,// 对局的channel为对战玩家的昵称
       onMessage: function (msg) {
         console.log('revGameMessage');
         console.log(msg);

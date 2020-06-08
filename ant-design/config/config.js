@@ -77,6 +77,12 @@ export default defineConfig({
               ],
             },
             {
+              name: 'table',
+              icon: 'smile',
+              path: '/list',
+              component: './ListTableList',
+            },
+            {
               name: '个人设置',
               icon: 'smile',
               path: '/account/settings',
@@ -85,7 +91,7 @@ export default defineConfig({
             {
               name: '游戏主页',
               icon: 'smile',
-              path: '/webSocket',
+              path: '/account/webSocket',
               component: './WebSocket',
             },
             {

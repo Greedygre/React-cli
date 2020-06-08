@@ -15,20 +15,20 @@ import styles from '../AccountSettings/style.less';
 var that = null;
 var userName = null;
 var chatRoomChannel = 'default';
-g.goEasy = new GoEasy({
-  host: 'hangzhou.goeasy.io',//应用所在的区域地址，杭州：hangzhou.goeasy.io，新加坡：singapore.goeasy.io
-  appkey: "BC-6ffc39fa9de840079599baf44bfe1c50",//替换为您的应用appkey
-  onConnected: function () {
-    console.log('连接成功！')
-  },
-  onDisconnected: function () {
-    //连接断开时调用后端方法
-    console.log('连接断开！')
-  },
-  onConnectFailed: function (error) {
-    console.log('连接失败或错误！')
-  }
-});
+// g.goEasy = new GoEasy({
+//   host: 'hangzhou.goeasy.io',//应用所在的区域地址，杭州：hangzhou.goeasy.io，新加坡：singapore.goeasy.io
+//   appkey: "BC-6ffc39fa9de840079599baf44bfe1c50",//替换为您的应用appkey
+//   onConnected: function () {
+//     console.log('连接成功！')
+//   },
+//   onDisconnected: function () {
+//     //连接断开时调用后端方法
+//     console.log('连接断开！')
+//   },
+//   onConnectFailed: function (error) {
+//     console.log('连接失败或错误！')
+//   }
+// });
 g.goEasy.subscribe({
   channel: chatRoomChannel,// 聊天室的channel为对战玩家的昵称
   onMessage: function (msg) {
