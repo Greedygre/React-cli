@@ -42,7 +42,7 @@ export default class MyChat extends Component {
       onMessage: function (msg) {
         console.log(msg);
         if (msg.content==="game start"){
-          history.replace("webSocket");
+          history.replace("account/webSocket");
         }
       }
     });

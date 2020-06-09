@@ -49,6 +49,36 @@ export default class MyChat extends Component {
     messages: [],
     timestamp: new Date().getTime()
   }
+  getChannel(userName){
+    if (userName!=='default'&&userName!==null){
+      console.log('============getChatRoom============' + userName)
+      const req = '/server/api/game/getGameChannel?userName='+userName;
+      fetch(req).then(response=>{
+        return response.json()
+      }).then((respone)=>{
+        if (respone.success){
+          console.log(respone);
+          const channels = JSON.parse(respone.data);
+          console.log(channels.chatChannel);
+          chatRoomChannel=channels.chatChannel;
+
+          g.gameChannel=channels.gameChannel;
+          g.goEasy.subscribe({
+            channel: channels.chatChannel,// 聊天室的channel为对战玩家的昵称
+            onMessage: function (msg) {
+              console.log(msg);
+              //订阅聊天室管道并更新聊天列表
+              revMessage(msg);
+            }
+          });
+        }else {
+          message.info(respone.message);
+        }
+
+      })
+
+    }
+  }
   setInputfoucs = () => {
     this.chat.refs.input.inputFocus();  //set input foucus
   }
@@ -64,10 +94,7 @@ export default class MyChat extends Component {
         revMessage(msg);
       }
     });
-    //v的内容包含value，时间戳，用户信息
-    //value: "😏", timestamp: 1589297437337, userInfo: avatar: "http://img.binlive.cn/6.png"
-    // name: "ricky"
-    // userId: "a59e454ea53107d66ceb0a59
+
     g.goEasy.publish({
       channel: chatRoomChannel, //替换为您自己的channel
       message: JSON.stringify({
@@ -77,13 +104,14 @@ export default class MyChat extends Component {
         avatar: v.userInfo.avatar
       })//替换为您想要发送的消息内容
     });
-
+    console.log("sendMessage");
   }
 
 
   render() {
     that = this;
-     getChatRoom(userName)
+   // getChatRoom(userName)
+
     const {myLogin, myMessage} = this.props;
     const {inputValue, messages, timestamp} = this.state;
     const userInfo = {
@@ -92,6 +120,7 @@ export default class MyChat extends Component {
       signature: myLogin.data.signature,
     };
     userName = userInfo.name;
+    this.getChannel(userName);
     const Item = List.Item
     //聊天消息
     const chatmsgs = myMessage.messages;
@@ -195,20 +224,25 @@ const revMessage = (message) => {
     }
   });
 }
-const getChatRoom = (userName) => {
-  console.log('============getChatRoom============' + userName)
-  const req = '/server/api/game/getChatRoomChannel?userName='+userName;
-  fetch(req).then(response=>{
-    return response.json()
-    }).then((respone)=>{
-      if (respone.success){
-        chatRoomChannel=respone.data;
-      }else {
-        message.info(respone.message);
-      }
 
-  })
-}
+// const getChatRoom = (userName) => {
+//   console.log(userName);
+//   if (userName!=="default"||userName!=='null'||userName!==null){
+//     console.log('============getChatRoom============' + userName)
+//     const req = '/server/api/game/getChatRoomChannel?userName='+userName;
+//     fetch(req).then(response=>{
+//       return response.json()
+//     }).then((respone)=>{
+//       if (respone.success){
+//         chatRoomChannel=respone.data;
+//       }else {
+//         message.info(respone.message);
+//       }
+//
+//     })
+//   }
+//
+// }
 const userLeaveGame = (userName) => {
   console.log('============userLeaveGame============' + userName)
   const req = '/server/api/game/userLeaveGame?userName='+userName;
@@ -227,5 +261,3 @@ const userLeaveGame = (userName) => {
 
 
 // ========================================
-
-

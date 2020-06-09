@@ -2,7 +2,7 @@ import React from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { Card, Typography, Alert } from 'antd';
 import styles from './Welcome.less';
-import Login from './Login';
+import GH from './GameHomePage/GamePageHome';
 
 const CodePreview = ({ children }) => (
   <pre className={styles.pre}>
@@ -14,6 +14,6 @@ const CodePreview = ({ children }) => (
 
 export default () => (
 
-    <Login />
+  <GH />
 
 );

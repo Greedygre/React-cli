@@ -1,8 +1,11 @@
 import React from 'react';
-import {Form, Modal, Radio} from 'antd';
+import {Form, message, Modal, Radio} from 'antd';
+import {connect} from "umi";
 const FormItem = Form.Item;
 const CreateForm = props => {
   const { modalVisible, onCancel } = props;
+  const currentUser = props;
+  console.log(currentUser);
   return (
     <div>
 
@@ -15,7 +18,7 @@ const CreateForm = props => {
     >
     <Form>
       <Form.Item>
-        当前绑定邮箱为：
+        {typeof currentUser.email!=='undefined'?("当前绑定邮箱为："+currentUser.email):"当前没有绑定的邮箱"}
       </Form.Item>
     </Form>
       {props.children}
@@ -24,4 +27,6 @@ const CreateForm = props => {
   );
 };
 
-export default CreateForm;
+export default connect(({ myLogin }) => ({
+  currentUser: myLogin.data,
+}))(CreateForm);

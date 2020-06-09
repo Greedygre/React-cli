@@ -61,6 +61,12 @@ export default defineConfig({
               component: './Register',
             },
             {
+              path: '/GamePageHome',
+              name: '游戏大厅',
+              icon: 'smile',
+              component: './GameHomePage',
+            },
+            {
               path: '/admin',
               name: 'admin',
               icon: 'crown',
@@ -75,12 +81,6 @@ export default defineConfig({
                   authority: ['admin'],
                 },
               ],
-            },
-            {
-              name: 'table',
-              icon: 'smile',
-              path: '/list',
-              component: './ListTableList',
             },
             {
               name: '个人设置',

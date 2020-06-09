@@ -48,24 +48,27 @@ export default {
           }
         });
         g.name=res.data.name;
-       history.replace("/account/settings");
+       history.replace("/GamePageHome");
       } else {
         message.warning(res.message);
       }
     },
+
     *logout(_, { put}) {
       const { redirect } = getPageQuery(); // Note: There may be security issues, please note
       yield put({
         type: 'show',
         payload:{
           data: {
-            name: [],
+            name: 'default',
             phoneNumber: [],
             email: [],
             sex: [],
             score: [],
             signature: [],
-            avatar: g.avatar
+            avatar: g.avatar,
+            chatChannel:'default',
+            gameChannel:'default'
           }
         }
       });
@@ -79,7 +82,34 @@ export default {
         });
       }
     },
+    *refresh(_, { put}) {
+      const { redirect } = getPageQuery(); // Note: There may be security issues, please note
+      yield put({
+        type: 'show',
+        payload:{
+          data: {
+            name: 'default',
+            phoneNumber: [],
+            email: [],
+            sex: [],
+            score: [],
+            signature: [],
+            avatar: g.avatar,
+            chatChannel:'default',
+            gameChannel:'default'
+          }
+        }
+      });
+      if (window.location.pathname !== '/user/login' && !redirect) {
 
+        history.replace({
+          pathname: '/welcome',
+          search: stringify({
+            redirect: window.location.href,
+          }),
+        });
+      }
+    },
 
   },
   reducers: {

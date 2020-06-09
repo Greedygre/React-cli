@@ -11,40 +11,46 @@ var that = null;
 var userName = 'default';
 var userANick = 'default';
 var startGameOnlyOne = 0;
-g.goEasy = new GoEasy({
-  host: 'hangzhou.goeasy.io',//应用所在的区域地址，杭州：hangzhou.goeasy.io，新加坡：singapore.goeasy.io
-  appkey: "BC-6ffc39fa9de840079599baf44bfe1c50",//替换为您的应用appkey
-  onConnected: function () {
-    console.log('连接成功！')
-  },
-  onDisconnected: function () {
-    //连接断开时调用后端方法
-    console.log('连接断开！')
-  },
-  onConnectFailed: function (error) {
-    console.log('连接失败或错误！')
-  }
-});
+// g.goEasy = new GoEasy({
+//   host: 'hangzhou.goeasy.io',//应用所在的区域地址，杭州：hangzhou.goeasy.io，新加坡：singapore.goeasy.io
+//   appkey: "BC-6ffc39fa9de840079599baf44bfe1c50",//替换为您的应用appkey
+//   onConnected: function () {
+//     console.log('连接成功！')
+//   },
+//   onDisconnected: function () {
+//     //连接断开时调用后端方法
+//     console.log('连接断开！')
+//   },
+//   onConnectFailed: function (error) {
+//     console.log('连接失败或错误！')
+//   }
+// });
 
 const dd = props => {
   const {userLogin} = props;
   console.log(userLogin);
+  userName=userLogin.data.name;
   console.log('props');
 
   console.log(props);
 
   const req = '/server/api/game/getGameChannel?userName='+userLogin.data.name;
   userName=userLogin.data.name;
-  fetch(req).then(response=>{
-    return response.json()
-  }).then((respone)=>{
-    if (respone.success){
-      gameChannel=respone.data;
-    }else {
-      message.info(respone.message);
-    }
+  if (userName!=='default'&&userName!==null){
+    fetch(req).then(response=>{
+      return response.json()
+    }).then((respone)=>{
+      if (respone.success){
+        console.log(respone);
+        const channels = JSON.parse(respone.data);
+        gameChannel=channels.gameChannel;
+      }else {
+        message.info(respone.message);
+      }
 
-  })
+    })
+  }
+
   return (
     <div>
       <Game/>
@@ -183,18 +189,11 @@ class Game extends React.Component {
   }
   //从数据库取出来返回的
   updateHistory2(gameDO) {
-    console.log('updateHistory2');
-    console.log(this.state);
     const gg=JSON.parse(gameDO);
     console.log(gg);
     userANick=gg.userANick;
     const history = JSON.parse(gg.checkerBoard);
     if (JSON.stringify(history.history)!==JSON.stringify(this.state.history)){
-      console.log(history);
-      console.log(history.length);
-      console.log(typeof gg.gameTurn);
-      console.log(typeof "x");
-      console.log(gg.gameTurn==="x");
 
       this.setState({
         history:history.history,
@@ -205,6 +204,7 @@ class Game extends React.Component {
 
   }
   handleClick(i) {
+    console.log("userANick"+userANick);
     if ((userName===userANick&&!this.state.xIsNext)||(userName!==userANick&&this.state.xIsNext)){
         message.info("当前不是你的轮次");
       }else {
@@ -259,7 +259,6 @@ class Game extends React.Component {
   }
 
   render() {
-
       const req = '/server/api/game/initGame?userName='+userName;
       fetch(req).then(response=>{
         return response.json()
@@ -291,8 +290,9 @@ class Game extends React.Component {
 
     let status;
     if (winner) {
-      let s = userANick===userName?"x":"o";
-      if (s===winner){
+
+      if ((userANick===userName?'X':'O')===winner){
+        console.log("userANick===userName");
         const req = '/server/api/game/settlementScore?userName='+userName+'&win=true';
         fetch(req).then(response=>{
           return response.json()

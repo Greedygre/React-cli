@@ -6,7 +6,7 @@ import { CurrentUser } from '../data.d';
 import GeographicView from './GeographicView';
 import PhoneView from './PhoneView';
 import styles from './BaseView.less';
-
+var score=null;
 const { Option } = Select; // 头像组件 方便以后独立，增加裁剪之类的功能
 
 const AvatarView = ({ avatar }: { avatar: string }) => (
@@ -102,7 +102,18 @@ class BaseView extends Component<BaseViewProps> {
 
   render() {
     const {  userLogin } = this.props;
+
     console.log(userLogin.data);
+    const req = '/server/api/user/getUserByName?userName='+userLogin.data.name;
+    fetch(req).then(response=>{
+      return response.json()
+    }).then((respone)=>{
+      if (respone.success){
+        score=respone.data;
+console.log(score);
+      }else {
+        message.info(respone.message);
+      }})
     return (
       <div className={styles.baseView} ref={this.getViewDom}>
         <div className={styles.left}>
@@ -126,7 +137,7 @@ class BaseView extends Component<BaseViewProps> {
               <p>{userLogin.data.phoneNumber}</p>
             </Form.Item>
             <Form.Item name="phone" label="分数">
-              <p>{userLogin.data.score}</p>
+              <p>{score}</p>
             </Form.Item>
             <Form.Item>
               <Button htmlType="submit" type="primary">

@@ -1,6 +1,6 @@
-import { FormattedMessage, formatMessage } from 'umi';
+import {FormattedMessage, formatMessage, connect} from 'umi';
 import { AlipayOutlined, DingdingOutlined, TaobaoOutlined } from '@ant-design/icons';
-import {Form, Avatar, Button, Divider, Dropdown, Input, List, Menu} from 'antd';
+import {Form, Avatar, Button, Divider, Dropdown, Input, List, Menu, message} from 'antd';
 import React, {Component, Fragment, useRef, useState} from 'react';
 import styles from './BaseView.less';
 import CreateForm from './CreateForm';
@@ -8,7 +8,7 @@ import CreateForm2 from './CreateForm2';
 import {PageHeaderWrapper} from "@ant-design/pro-layout";
 import ProTable from "@ant-design/pro-table";
 
-const BindingView = () => {
+const BindingView = (props) => {
 
   const getData =  [
     {
@@ -57,16 +57,20 @@ const BindingView = () => {
         <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
           <ProTable
             onSubmit={async value => {
-              console.log(value.email);
-              // const success = await handleAdd(value);
-              //
-              // if (success) {
-              //   handleModalVisible(false);
-              //
-              //   if (actionRef.current) {
-              //     actionRef.current.reload();
-              //   }
-              // }
+              const currentUser=props;
+              console.log(currentUser);
+              // const req = '/server/api/user/sendEmailVerification?email='+value.email+'&userName='+currentUser.name;
+              const req = '/server/api/user/sendEmailVerification?userName='+currentUser.currentUser.name+'&email='+value.email;
+              fetch(req).then(response=>{
+                return response.json()
+              }).then((respone)=>{
+                console.log(respone) //请求到的数据
+                if (respone.success){
+                  message.info("请到邮箱中点击链接进行验证！");
+                }else {
+                  message.info(respone.message);
+                }
+              })
             }}
             rowKey="key"
             type="form"
@@ -116,5 +120,6 @@ const BindingView = () => {
 
 }
 
-
-export default BindingView;
+export default connect(({ myLogin }) => ({
+  currentUser: myLogin.data,
+}))(BindingView);
